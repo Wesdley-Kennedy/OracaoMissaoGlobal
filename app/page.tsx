@@ -157,7 +157,7 @@ export default function Home() {
                         onKeyDown={formProgress}
                         className="w-full p-3 outline-none bg-transparent text-gray-800 dark:text-white"
                       />
-                      <button type="button" onClick={() => setPasswordVisible(!isPasswordVisible)} className="pr-4 text-gray-500 hover:scale-105 hover:text-blue-500 transform duration-300 cursor-pointer">
+                      <button type="button" onClick={() => setPasswordVisible(!isPasswordVisible)} className="pr-4 text-gray-500 hover:scale-105 hover:text-blue-500 transform duration-300">
                         {isPasswordVisible ? <VscEyeClosed size={20} /> : <VscEye size={20} />}
                       </button>
                     </div>
@@ -169,7 +169,7 @@ export default function Home() {
                   disabled={is_loading}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-black dark:bg-white text-white dark:text-black font-medium py-3 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black font-medium py-3 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {is_loading ? "Carregando..." : "Entrar"}
                   <RiLoginCircleLine size={20} />
