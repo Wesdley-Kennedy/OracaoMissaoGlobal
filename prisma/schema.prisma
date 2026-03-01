@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PrayerLog {
+  id        String   @id @default(cuid())
+  userId    String
+  minutes   Int
+  type      String   // "adicionado" ou "editado"
+  createdAt DateTime @default(now())
+}

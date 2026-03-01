@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// 🔹 Helper para formatar resposta
 function formatLog(log: any) {
   return {
     id: log.id,
@@ -12,45 +11,41 @@ function formatLog(log: any) {
   };
 }
 
-// GET - Buscar todos os logs
 export async function GET() {
   try {
     const logs = await prisma.prayerLog.findMany({
       orderBy: { createdAt: "desc" },
     });
-
-    const formatted = logs.map(formatLog);
-
-    return NextResponse.json(formatted);
+    return NextResponse.json(logs.map(formatLog));
   } catch (error) {
-    return NextResponse.json(
-      { error: "Erro ao buscar registros" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao buscar registros" }, { status: 500 });
   }
 }
 
-// POST - Criar novo log
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { hours, minutes } = body;
-
-    const totalMinutes = hours * 60 + minutes;
+    const { hours, minutes, type } = await req.json();
+    const totalMinutes = (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
 
     const newLog = await prisma.prayerLog.create({
       data: {
-        userId: "TEMP_USER", // depois ligamos com auth real
+        userId: "TEMP_USER",
         minutes: totalMinutes,
-        type: "adicionado",
+        type: type || "adicionado",
       },
     });
 
     return NextResponse.json(formatLog(newLog));
   } catch (error) {
-    return NextResponse.json(
-      { error: "Erro ao criar registro" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao criar registro" }, { status: 500 });
+  }
+}
+
+export async function DELETE() {
+  try {
+    await prisma.prayerLog.deleteMany({});
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Erro ao limpar registros" }, { status: 500 });
   }
 }

@@ -12,10 +12,10 @@ export type PrayerHistoryItem = {
 type PrayerState = {
   history: PrayerHistoryItem[];
   totalMinutes: () => number;
-  setHistoryFromDatabase: (logs: PrayerHistoryItem[]) => void;
   loadFromDatabase: () => Promise<void>;
-  addTime: (hours: number, minutes: number) => Promise<void>;
+  addTime: (hours: number, minutes: number, type?: "adicionado" | "editado") => Promise<void>;
   removeHistoryItem: (id: string) => Promise<void>;
+  clearHistory: () => Promise<void>;
 };
 
 export const usePrayer = create<PrayerState>((set, get) => ({
@@ -27,33 +27,48 @@ export const usePrayer = create<PrayerState>((set, get) => ({
       0
     ),
 
-  setHistoryFromDatabase: (logs) => {
-    set({ history: logs });
-  },
-
   loadFromDatabase: async () => {
-    const response = await api.get("/prayer-logs");
-    set({ history: response.data });
+    try {
+      const response = await api.get("/prayer-logs");
+      set({ history: response.data });
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
   },
 
-  addTime: async (hours, minutes) => {
-    const response = await api.post("/prayer-logs", {
-      hours,
-      minutes,
-    });
-
-    const newLog = response.data;
-
-    set((state) => ({
-      history: [newLog, ...state.history],
-    }));
+  addTime: async (hours, minutes, type = "adicionado") => {
+    try {
+      const response = await api.post("/prayer-logs", {
+        hours,
+        minutes,
+        type,
+      });
+      set((state) => ({
+        history: [response.data, ...state.history],
+      }));
+    } catch (error) {
+      console.error("Erro ao adicionar tempo:", error);
+      throw error;
+    }
   },
 
   removeHistoryItem: async (id) => {
-    await api.delete(`/prayer-logs/${id}`);
+    try {
+      await api.delete(`/prayer-logs/${id}`);
+      set((state) => ({
+        history: state.history.filter((item) => item.id !== id),
+      }));
+    } catch (error) {
+      console.error("Erro ao remover item:", error);
+    }
+  },
 
-    set((state) => ({
-      history: state.history.filter((item) => item.id !== id),
-    }));
+  clearHistory: async () => {
+    try {
+      await api.delete("/prayer-logs");
+      set({ history: [] });
+    } catch (error) {
+      console.error("Erro ao limpar histórico:", error);
+    }
   },
 }));
