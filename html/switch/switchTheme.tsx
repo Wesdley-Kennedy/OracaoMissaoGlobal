@@ -21,7 +21,7 @@ export default function LoginSwitchTheme() {
       whileTap={{ scale: 0.95 }}
       className={`
         relative w-10 h-10 flex items-center justify-center
-        rounded-full transition-colors duration-300
+        rounded-full transition-colors duration-300 cursor-pointer
         ${theme 
           ? "bg-gray-100 hover:bg-gray-200" 
           : "bg-slate-800  hover:bg-slate-700"}
