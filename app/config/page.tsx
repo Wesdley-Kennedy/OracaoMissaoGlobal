@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import DashboardActions from "@/components/DashboardActions";
 import { IoSettingsSharp } from "react-icons/io5";
 import { History, Edit3, Trash2, Check, X } from "lucide-react";
-import { FixedSizeList as List } from "react-window";
+import { FixedSizeList } from "react-window";
 
 export default function ConfigPage() {
   const { is_auth } = useLogin();
@@ -81,12 +81,13 @@ export default function ConfigPage() {
     });
   };
 
-  // Componente de linha para a lista virtualizada
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const item = history[index];
+    if (!item) return null;
+    
     return (
       <div style={{ ...style, paddingBottom: '12px' }}>
-        <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all h-full">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all h-[73px]">
           <div className="flex flex-col">
             <span className="font-medium text-gray-800 dark:text-white">
               {item.hours}h {item.minutes !== 0 ? `e ${Math.abs(item.minutes)}m` : ""}
@@ -119,7 +120,6 @@ export default function ConfigPage() {
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Configurações do Sistema</h1>
         </div>
         
-        {/* Seção de Edição */}
         <div className="bg-white dark:bg-[#0a0f18] p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-2 mb-6">
             <Edit3 size={20} className="text-gray-600 dark:text-gray-400" />
@@ -162,7 +162,6 @@ export default function ConfigPage() {
           </div>
         </div>
 
-        {/* Seção de Histórico com Virtualização */}
         <div className="bg-white dark:bg-[#0a0f18] p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 flex flex-col">
           <div className="flex items-center justify-between mb-6 shrink-0">
             <div className="flex items-center gap-2">
@@ -177,20 +176,19 @@ export default function ConfigPage() {
             </button>
           </div>
 
-          {/* Lista Virtualizada */}
           <div className="w-full h-[400px]">
             {history.length === 0 ? (
               <p className="text-center py-12 text-gray-500 italic">Nenhum registro encontrado.</p>
             ) : (
-              <List
+              <FixedSizeList
                 height={400}
                 itemCount={history.length}
-                itemSize={85} // Altura de cada item + espaçamento
+                itemSize={85}
                 width="100%"
                 className="custom-scrollbar"
               >
                 {Row}
-              </List>
+              </FixedSizeList>
             )}
           </div>
         </div>
