@@ -7,7 +7,7 @@ import { usePrayer } from "@/store/usePrayer";
 import toast from "react-hot-toast";
 import DashboardActions from "@/components/DashboardActions";
 import { IoSettingsSharp } from "react-icons/io5";
-import { History, Edit3, Trash2 } from "lucide-react";
+import { History, Edit3, Trash2, Check, X } from "lucide-react";
 
 export default function ConfigPage() {
   const { is_auth } = useLogin();
@@ -42,6 +42,42 @@ export default function ConfigPage() {
     toast.success("Tempo editado com sucesso!");
     setEditHours("");
     setEditMinutes("");
+  };
+
+  const confirmClearAll = () => {
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-medium text-gray-800">
+          Tem certeza que deseja <b>zerar tudo</b>?
+        </p>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors flex items-center gap-1"
+          >
+            <X size={14} /> Cancelar
+          </button>
+          <button
+            onClick={() => {
+              clearHistory();
+              toast.dismiss(t.id);
+              toast.success("Sistema resetado com sucesso");
+            }}
+            className="px-3 py-1.5 text-xs bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors flex items-center gap-1 font-bold"
+          >
+            <Check size={14} /> Confirmar
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 5000,
+      position: "top-center",
+      style: {
+        minWidth: "250px",
+        padding: "16px",
+        borderRadius: "12px",
+      }
+    });
   };
 
   if (!mounted || !is_auth) return null;
@@ -99,34 +135,30 @@ export default function ConfigPage() {
           </div>
         </div>
 
-        {/* Seção de Histórico */}
-        <div className="bg-white dark:bg-[#0a0f18] p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800">
-          <div className="flex items-center justify-between mb-6">
+        {/* Seção de Histórico com Scroll Independente */}
+        <div className="bg-white dark:bg-[#0a0f18] p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[600px]">
+          <div className="flex items-center justify-between mb-6 shrink-0">
             <div className="flex items-center gap-2">
               <History size={20} className="text-gray-600 dark:text-gray-400" />
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Últimos Registros</h2>
             </div>
             <button 
-              onClick={() => {
-                if(confirm("Tem certeza que deseja limpar todo o histórico e zerar o contador?")) {
-                  clearHistory();
-                  toast.success("Sistema resetado");
-                }
-              }}
-              className="text-red-500 hover:text-red-600 flex items-center gap-1 text-sm font-medium cursor-pointer"
+              onClick={confirmClearAll}
+              className="text-red-500 hover:text-red-600 flex items-center gap-1 text-sm font-medium cursor-pointer transition-colors"
             >
               <Trash2 size={16} /> Limpar Tudo
             </button>
           </div>
 
-          <div className="space-y-3">
+          {/* Container de Scroll Otimizado */}
+          <div className="overflow-y-auto pr-2 space-y-3 custom-scrollbar scroll-smooth">
             {history.length === 0 ? (
-              <p className="text-center py-8 text-gray-500 italic">Nenhum registro encontrado.</p>
+              <p className="text-center py-12 text-gray-500 italic">Nenhum registro encontrado.</p>
             ) : (
-              history.slice(0, 10).map((item) => (
+              history.map((item) => (
                 <div 
                   key={item.id} 
-                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10"
+                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all"
                 >
                   <div className="flex flex-col">
                     <span className="font-medium text-gray-800 dark:text-white">
@@ -136,7 +168,7 @@ export default function ConfigPage() {
                       {new Date(item.timestamp).toLocaleString('pt-BR')}
                     </span>
                   </div>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+                  <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
                     item.type === 'adicionado' 
                       ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
                       : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
