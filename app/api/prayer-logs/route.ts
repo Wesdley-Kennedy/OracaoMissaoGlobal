@@ -32,7 +32,6 @@ export async function POST(req: Request) {
 
     const newLog = await prisma.prayerLog.create({
       data: {
-        userId: "TEMP_USER",
         minutes: totalMinutes,
         type: type || "adicionado",
       },
