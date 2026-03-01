@@ -12,7 +12,6 @@ export default function Dashboard() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  // Garante que o componente foi montado no cliente antes de checar auth
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -27,24 +26,25 @@ export default function Dashboard() {
   if (!mounted || !is_auth) return null;
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen p-8 flex flex-col items-center justify-center">
+      {/* Botões fixos no canto superior direito */}
+      <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+        <LoginSwitchTheme />
+        <button 
+          onClick={() => {
+            logout();
+            router.push("/");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md active:scale-95"
+          title="Sair"
+        >
+          <IoExitOutline size={22} />
+        </button>
+      </div>
+
+      <div className="w-full max-w-4xl">
+        <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
-          
-          <div className="flex items-center gap-3">
-            <LoginSwitchTheme />
-            <button 
-              onClick={() => {
-                logout();
-                router.push("/");
-              }}
-              className="w-10 h-10 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md active:scale-95"
-              title="Sair"
-            >
-              <IoExitOutline size={22} />
-            </button>
-          </div>
         </div>
         
         <div className="bg-white dark:bg-[#0a0f18] p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 backdrop-filter backdrop-blur-lg bg-opacity-95 dark:bg-opacity-90">

@@ -3,6 +3,7 @@
 import "./globals.css";
 import { customizeSystem } from "@/store/customizeSystem";
 import { Toaster } from "react-hot-toast";
+import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function RootLayout({
   children,
@@ -17,7 +18,8 @@ export default function RootLayout({
         <link rel="icon" type="image/jpg" href="/ico.jpg" />
         <title>Contagem de Oração</title>
       </head>
-      <body>
+      <body className="relative min-h-screen">
+        <AnimatedBackground />
         <Toaster position="top-right" reverseOrder={false} />
         {children}
       </body>
