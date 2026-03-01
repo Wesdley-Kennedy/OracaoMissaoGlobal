@@ -164,38 +164,37 @@ export default function ConfigPage() {
               </div>
             ) : (
               history.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-800 dark:text-white">
-                      {item.hours}h {item.minutes !== 0 ? `e ${Math.abs(item.minutes)}m` : ""}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(item.timestamp).toLocaleString('pt-BR')}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                      item.type === 'adicionado' 
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                    }`}>
-                      {item.type}
-                    </span>
-                    <button
-                      onClick={() => handleDeleteItem(item.id, item.hours, item.minutes)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-                      title="Excluir registro"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+  <div 
+    key={item.id} 
+    className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all"
+  >
+    <div className="flex flex-col">
+      <span className="font-medium text-gray-800 dark:text-white">
+        {item.hours}h {item.minutes !== 0 ? `e ${item.minutes}` : ""}  {/* Mostra o sinal real */}
+      </span>
+      <span className="text-xs text-gray-500">
+        {new Date(item.timestamp).toLocaleString('pt-BR')}
+      </span>
+    </div>
+    
+    <div className="flex items-center gap-4">
+      <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+        item.type === 'adicionado' 
+          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+      }`}>
+        {item.type}
+      </span>
+      <button
+        onClick={() => handleDeleteItem(item.id, item.hours, item.minutes)}
+        className="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+        title="Excluir registro"
+      >
+        <Trash2 size={18} />
+      </button>
+    </div>
+  </div>
+)))}
           </div>
         </div>
       </div>
