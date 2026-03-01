@@ -29,8 +29,10 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <DashboardActions />
       
-      <main className="w-full max-w-5xl">
-        <PrayerCounter />
+      <main className="w-full max-w-4xl">
+        <div className="bg-white dark:bg-[#0a0f18] p-8 md:p-16 rounded-[2.5rem] shadow-2xl border border-gray-200 dark:border-gray-800 backdrop-filter backdrop-blur-lg bg-opacity-95 dark:bg-opacity-90">
+          <PrayerCounter />
+        </div>
       </main>
     </div>
   );
