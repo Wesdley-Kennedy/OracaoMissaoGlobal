@@ -24,34 +24,32 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { RiLoginCircleLine } from "react-icons/ri";
 
-// Interface
-interface FormLogin {
-  login: string;
-  senha: string;
-}
-
 export default function Home() {
+  const router = useRouter();
+  const { login: loginStore, is_auth } = useLogin();
 
-  // Router
-  const useLogin = useRouter();
+  const theme = customizeSystem();
 
-  // Form State
-  const [form, setForm] = useState<FormLogin>({
-    login: "",
-    senha: "",
-  });
+  const [form, setForm] = useState({ login: "", senha: "" });
 
-  // Form References
-  const formRef = {
-    login: useRef<HTMLDivElement>(null),
-    senha: useRef<HTMLDivElement>(null),
-  };
-
-  // Input References
+  // Refs para navegação entre inputs
   const inputRef = {
     login: useRef<HTMLInputElement>(null),
     senha: useRef<HTMLInputElement>(null),
     submit: useRef<HTMLButtonElement>(null),
+  };
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Função de login
+  const handleLogin = async () => {
+    if (form.login.length <= 3 || form.senha.length <= 3) return;
+
+    await loginStore(form.login, form.senha);
+
+    if (useLogin.getState().is_auth) {
+      router.push("/dashboard");
+    }
   };
 
   // Password visibility state
@@ -65,12 +63,12 @@ export default function Home() {
     setPasswordVisible(!isPasswordVisible);
   };
 
-  // Form progression with Enter key
-  const formProgress = (key: string) => {
-    if (key !== "Enter") return;
+  // Progresso do form com Enter
+  const formProgress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== "Enter") return;
 
-    if (form.senha.length > 3 && form.login.length > 3) {
-      logar(form, formRef, inputRef);
+    if (form.login.length > 3 && form.senha.length > 3) {
+      handleLogin();
       return;
     }
 
@@ -83,8 +81,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950">
-      {/* Animated background shapes - now with fixed positions */}
+    <div className="min-h-screen w-full relative overflow-hidden bg-linear-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950">
+      {/* Animated background shapes */}
       <div className="absolute inset-0 overflow-hidden">
         {backgroundShapes.map((shape: any, i: any) => (
           <motion.div
@@ -93,7 +91,7 @@ export default function Home() {
             initial="initial"
             animate="animate"
             variants={shapeVariants}
-            className="absolute rounded-full bg-[var(--primaria)] dark:bg-[var(--primaria)] filter blur-3xl"
+            className="absolute rounded-full bg-black dark:bg-white filter blur-3xl"
             style={{
               width: shape.width,
               height: shape.height,
@@ -104,7 +102,7 @@ export default function Home() {
           />
         ))}
 
-        {/* Overlay pattern for texture */}
+        {/* Overlay pattern */}
         <div
           className="absolute inset-0 bg-repeat opacity-5 dark:opacity-10"
           style={{
@@ -118,36 +116,19 @@ export default function Home() {
       </div>
 
       <div className="relative flex flex-col items-center justify-center min-h-screen p-4">
-        {/* Logo Container */}
-        <motion.div
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-6"
-        >
-          {/* Logo placeholder - replace with your actual logo */}
-          <div className="relative flex items-center justify-center">
-            {/* You should replace this with your actual logo */}
-            <div className="bg-white dark:bg-black rounded-xl shadow-lg p-3">
-              <div className="flex items-center space-x-2">
-                <div className="text-xl  font-bold bg-gradient-to-r from-[var(--primaria)] to-[var(--secundaria)] text-transparent bg-clip-text">
-                
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-md bg-white dark:bg-black rounded-2xl shadow-xl overflow-hidden backdrop-filter backdrop-blur-lg bg-opacity-95 dark:bg-opacity-90"
         >
-          {/* Header with accent color */}
-          <div className="bg-[var(--primaria)] dark:bg-[var(--primaria)] h-2 w-full"></div>
+          <div className="bg-black dark:bg-white h-2 w-full"></div>
 
-          <div className="p-8">
+          <form
+            className="p-8"
+            ref={formRef}
+            onSubmit={(e) => e.preventDefault()}
+          >
             <motion.div
               initial="hidden"
               animate="visible"
@@ -155,7 +136,10 @@ export default function Home() {
               className="space-y-6"
             >
               {/* Title */}
-              <motion.div variants={itemVariants} className="text-center">
+              <motion.div
+                variants={itemVariants}
+                className="text-center select-none"
+              >
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
                   Bem-vindo
                 </h1>
@@ -164,12 +148,12 @@ export default function Home() {
                 </p>
               </motion.div>
 
-              {/* Login Form */}
+              {/* Inputs */}
               <div className="space-y-6">
-                {/* Username Input */}
+                {/* Login */}
                 <motion.div variants={itemVariants}>
                   <div
-                    ref={formRef.login}
+                    ref={inputRef.login}
                     className={`relative border dark:border-gray-700 rounded-lg  duration-300 ${
                       loginFocused || form.login.length > 0
                         ? "border-[var(--secundaria)] dark:border-[var(--secundaria)] shadow-sm"
@@ -183,9 +167,8 @@ export default function Home() {
                           : "text-gray-500 dark:text-white text-sm translate-y-[0.7rem] translate-x-[2.5rem]"
                       }`}
                     >
-                      Email
+                      Login
                     </label>
-
                     <div className="flex items-center">
                       <div className="pl-4 py-3 text-gray-500 dark:text-white">
                         <FaUser />
@@ -194,22 +177,22 @@ export default function Home() {
                         type="text"
                         ref={inputRef.login}
                         value={form.login}
+                        onFocus={() => setLoginFocused(true)}
+                        onBlur={() => setLoginFocused(false)}
                         onChange={(e) =>
                           setForm({ ...form, login: e.target.value })
                         }
-                        onFocus={() => setLoginFocused(true)}
-                        onBlur={() => setLoginFocused(false)}
-                        onKeyUp={(e) => formProgress(e.key)}
+                        onKeyDown={formProgress}
                         className="w-full p-3 outline-none bg-transparent text-gray-800 dark:text-white"
                       />
                     </div>
                   </div>
                 </motion.div>
 
-                {/* Password Input */}
+                {/* Senha */}
                 <motion.div variants={itemVariants}>
                   <div
-                    ref={formRef.senha}
+                    ref={inputRef.senha}
                     className={`relative border dark:border-gray-700 rounded-lg  duration-300 ${
                       passwordFocused || form.senha.length > 0
                         ? "border-[var(--secundaria)] dark:border-[var(--secundaria)] shadow-sm"
@@ -225,27 +208,26 @@ export default function Home() {
                     >
                       Senha
                     </label>
-
                     <div className="flex items-center">
                       <div className="pl-4 py-3 text-gray-500 dark:text-white">
                         <FaLock />
                       </div>
                       <input
-                        type={isPasswordVisible ? "text" : "password"}
                         ref={inputRef.senha}
+                        type={isPasswordVisible ? "text" : "password"}
                         value={form.senha}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
                         onChange={(e) =>
                           setForm({ ...form, senha: e.target.value })
                         }
-                        onFocus={() => setPasswordFocused(true)}
-                        onBlur={() => setPasswordFocused(false)}
-                        onKeyUp={(e) => formProgress(e.key)}
+                        onKeyDown={formProgress}
                         className="w-full p-3 outline-none bg-transparent text-gray-800 dark:text-white"
                       />
                       <button
                         type="button"
                         onClick={togglePasswordVisibility}
-                        className="pr-4 text-gray-500 dark:text-gray-400 hover:text-[var(--secundaria)] dark:hover:text-[var(--secundaria)] transition-colors"
+                        className="pr-4 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                       >
                         {isPasswordVisible ? (
                           <VscEyeClosed className="w-5 h-5" />
@@ -257,15 +239,15 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-
-                {/* Login Button */}
+                {/* Botão de login */}
                 <motion.div variants={itemVariants}>
                   <motion.button
+                    type="button"
                     ref={inputRef.submit}
-                    onClick={() => logar(form, formRef, inputRef)}
+                    onClick={handleLogin}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full select-none cursor-pointer  bg-gradient-to-r from-[var(--primaria)] to-[var(--secundaria)] hover:opacity-90 text-[var(--letra)] font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2  shadow-md"
+                    className="w-full select-none cursor-pointer bg-linear-to-r from-[#000000] to-[#ffff] hover:opacity-90 text-black font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md"
                   >
                     <span>Entrar</span>
                     <RiLoginCircleLine className="w-5 h-5" />
@@ -273,7 +255,7 @@ export default function Home() {
                 </motion.div>
               </div>
             </motion.div>
-          </div>
+          </form>
         </motion.div>
       </div>
     </div>
