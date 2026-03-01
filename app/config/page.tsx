@@ -11,7 +11,7 @@ import { History, Edit3, Trash2, Check, X } from "lucide-react";
 
 export default function ConfigPage() {
   const { is_auth } = useLogin();
-  const { history, addTime, clearHistory } = usePrayer();
+  const { history, addTime, clearHistory, removeHistoryItem } = usePrayer();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -42,6 +42,11 @@ export default function ConfigPage() {
     toast.success("Tempo editado com sucesso!");
     setEditHours("");
     setEditMinutes("");
+  };
+
+  const handleDeleteItem = (id: string, hours: number, minutes: number) => {
+    removeHistoryItem(id);
+    toast.success(`Registro de ${hours}h ${minutes !== 0 ? `${Math.abs(minutes)}m` : ""} removido`);
   };
 
   const confirmClearAll = () => {
@@ -150,7 +155,6 @@ export default function ConfigPage() {
             </button>
           </div>
 
-          {/* Container de Scroll Otimizado */}
           <div className="overflow-y-auto pr-2 space-y-3 custom-scrollbar scroll-smooth">
             {history.length === 0 ? (
               <p className="text-center py-12 text-gray-500 italic">Nenhum registro encontrado.</p>
@@ -168,13 +172,23 @@ export default function ConfigPage() {
                       {new Date(item.timestamp).toLocaleString('pt-BR')}
                     </span>
                   </div>
-                  <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                    item.type === 'adicionado' 
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  }`}>
-                    {item.type}
-                  </span>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+                      item.type === 'adicionado' 
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    }`}>
+                      {item.type}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteItem(item.id, item.hours, item.minutes)}
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                      title="Excluir registro"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
               ))
             )}

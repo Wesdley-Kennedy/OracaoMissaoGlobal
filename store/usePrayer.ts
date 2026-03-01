@@ -13,6 +13,7 @@ type PrayerState = {
   totalMinutes: number;
   history: PrayerHistoryItem[];
   addTime: (hours: number, minutes: number, type?: "adicionado" | "editado") => void;
+  removeHistoryItem: (id: string) => void;
   clearHistory: () => void;
 };
 
@@ -36,7 +37,21 @@ export const usePrayer = create<PrayerState>()(
 
           return {
             totalMinutes: state.totalMinutes + addedMinutes,
-            history: [newItem, ...state.history].slice(0, 50), // Mantém os últimos 50 registros
+            history: [newItem, ...state.history].slice(0, 50),
+          };
+        });
+      },
+
+      removeHistoryItem: (id: string) => {
+        set((state) => {
+          const itemToRemove = state.history.find((item) => item.id === id);
+          if (!itemToRemove) return state;
+
+          const minutesToRemove = (itemToRemove.hours * 60) + itemToRemove.minutes;
+
+          return {
+            totalMinutes: state.totalMinutes - minutesToRemove,
+            history: state.history.filter((item) => item.id !== id),
           };
         });
       },
