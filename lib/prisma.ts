@@ -7,10 +7,10 @@ export const prisma =
   new PrismaClient({
     datasources: {
       db: {
-        url: process.env.DATABASE_URL, // pega a variável do Vercel
+        url: "postgresql://postgres:Matchola8228..@db.nerfryuccuxfucrjckdp.supabase.co:5432/postgres", // pega a variável do Vercel
       },
     },
   });
 
-if (process.env.NODE_ENV !== "production")
+//if (process.env.NODE_ENV !== "production")
   globalForPrisma.prisma = prisma;
