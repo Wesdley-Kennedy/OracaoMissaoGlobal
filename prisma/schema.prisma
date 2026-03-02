@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = "postgresql://postgres:Matchola8228..@db.nerfryuccuxfucrjckdp.supabase.co:6543/postgres?pgbouncer=true"
-  directUrl = "postgresql://postgres:Matchola8228..@db.nerfryuccuxfucrjckdp.supabase.co:5432/postgres" 
+  url       = "postgresql://postgres:Matchola8228..@db.nerfryuccuxfucrjckdp.supabase.co:5432/postgres"
+  directUrl = "postgresql://postgres:Matchola8228..@db.nerfryuccuxfucrjckdp.supabase.co:5432/postgres"
 }
 
 model PrayerLog {
